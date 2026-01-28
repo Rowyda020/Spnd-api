@@ -11,6 +11,10 @@ const userSchema = new Schema({
         type: String,
         required: false
     },
+    totalIncome: {
+        type: Number,
+        default: 0.0
+    },
     email: {
         type: String,
         unique: true,
