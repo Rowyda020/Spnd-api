@@ -33,3 +33,27 @@ export const sendWarningEmail = (email) => {
     `
     });
 };
+
+
+export const sendSharedBudgetEmail = (email, budgetName, addedBy) => {
+    return resend.emails.send({
+        from: 'Spnd <no-reply@resend.dev>',
+        to: email,
+        subject: `🎉 You’ve been added to a shared budget!`,
+        html: `
+      <div style="font-family: Arial, sans-serif; line-height: 1.6;">
+        <h2>Hello 👋</h2>
+        <p>Good news! You’ve been added to the shared budget <strong>${budgetName}</strong>.</p>
+        <p>Added by: <strong>${addedBy}</strong></p>
+        <p>Now you can collaborate, track expenses, and manage finances together 💪</p>
+
+        <p style="margin-top: 20px;"><strong>— Spnd Team</strong></p>
+
+        <hr style="margin: 20px 0;" />
+        <small style="color: #888;">
+          This is an automated email. No action needed unless you weren’t expecting this.
+        </small>
+      </div>
+    `
+    });
+};

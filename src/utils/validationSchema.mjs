@@ -77,3 +77,26 @@ export const createExpenseValidationSchema = {
         }
     },
 }
+
+
+export const createsharedBudgetValidationSchema = {
+    amount: {
+        notEmpty: {
+            errorMessage: "Please provide the amount of your income"
+        }
+    },
+
+    participants: {
+        notEmpty: {
+            errorMessage: "Please provide the category of your income"
+        }
+    },
+    budgetname: {
+        isString: {
+            errorMessage: "budgetname must be a string"
+        },
+        notEmpty: {
+            errorMessage: "Please provide the budgetname"
+        }
+    }
+}
