@@ -1,0 +1,65 @@
+# Node.js dependencies
+/node_modules
+/npm-debug.log*
+/yarn-debug.log*
+/yarn-error.log*
+/pnpm-debug.log*
+
+# dotenv environment variables
+.env
+.env.local
+.env.development.local
+.env.test.local
+.env.production.local
+
+# Logs
+logs
+*.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+
+# OS generated files
+.DS_Store
+Thumbs.db
+
+# Build output
+/dist
+/build
+/out
+/.next
+/.expo
+/.nuxt
+
+# Angular specific
+/.angular/cache
+/*.tsbuildinfo
+
+# React specific
+/node_modules
+/public/static
+/.cache
+/.pnp
+.pnp.js
+
+# IDEs and editors
+.vscode/
+.idea/
+*.suo
+*.ntvs*
+*.njsproj
+*.sln
+*.sw?
+*.iml
+
+# Testing
+/coverage
+/jest-cache
+/karma-debug.log
+
+# Misc
+*.bak
+*.tmp
+*.swp
+*.pid
+*.seed
