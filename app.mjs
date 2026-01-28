@@ -1,8 +1,9 @@
 import express from 'express'
 import dotenv from 'dotenv'
-import mongoose from 'mongoose';
+import mongoose, { Mongoose } from 'mongoose';
 import indexRoute from '../Spnd/src/routes/index.mjs'
 import passport from "passport"
+import MongoStore from "connect-mongo"
 
 import session from "express-session"
 dotenv.config();
@@ -20,7 +21,8 @@ app.use(session({
     secret: process.env.SESSION_SECRET || 'your-secret-key',
     resave: false,
     saveUninitialized: false,
-    cookie: { secure: false }
+    cookie: { secure: false },
+    store: MongoStore.create({ client: mongoose.connection.getClient() })
 }))
 app.use(passport.initialize())
 app.use(passport.session())

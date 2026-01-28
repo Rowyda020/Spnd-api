@@ -32,3 +32,27 @@ export const createUserValidationSchema = {
         normalizeEmail: true  // ✅ Sanitizes email
     }
 }
+
+export const createIncomeValidationSchema = {
+    amount: {
+        notEmpty: {
+            errorMessage: "Please provide the amount of your income"
+        }
+    },
+    soruce: {
+        notEmpty: {
+            errorMessage: "Please provide the amount of your income"
+        },
+        isString: {
+            errorMessage: "Please provide the source of income"
+        }
+    },
+    category: {
+        isString: {
+            errorMessage: "category must be a string"
+        },
+        notEmpty: {
+            errorMessage: "Please provide the category of your income"
+        }
+    },
+}
