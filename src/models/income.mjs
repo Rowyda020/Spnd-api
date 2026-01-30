@@ -12,7 +12,7 @@ const incomeSchema = new Schema({
         type: Number,
         required: true
     },
-    soruce: {
+    source: {
         type: String,
         required: true
     },
@@ -22,8 +22,11 @@ const incomeSchema = new Schema({
     },
     createdAt: {
         type: Date,
-        default: Date.now
-    }
+        default: Date.now,
+        // Transform on retrieval
+    },
+}, {
+    timestamps: true  // Apply getters when converting to JSON
 
 })
 

@@ -20,8 +20,12 @@ const expenseSchema = new Schema({
     },
     createdAt: {
         type: Date,
-        default: Date.now
-    }
+        default: Date.now,
+        // Transform on retrieval
+    },
+}, {
+    timestamps: true  // Apply getters when converting to JSON
+
 })
 
 const Expense = mongoose.model('Expense', expenseSchema)

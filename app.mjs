@@ -12,7 +12,7 @@ const app = express();
 app.use(express.json());  // Parse JSON bodies
 app.use(express.urlencoded({ extended: true }));  // Parse URL-encoded bodies
 
-mongoose.connect('mongodb://localhost/Spnd')
+mongoose.connect(process.env.MONGO_URI)
     .then(() => console.log("connected to db"))
     .catch((err) => console.log(err))
 

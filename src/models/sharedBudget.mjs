@@ -26,9 +26,9 @@ const sharedBudgetSchema = new Schema({
     },
     createdAt: {
         type: Date,
-        default: Date.now
-    }
-
+        default: Date.now,
+        // Transform on retrieval
+    },
 }, { timestamps: true })
 
 const SharedBudget = mongoose.model('SharedBudget', sharedBudgetSchema)

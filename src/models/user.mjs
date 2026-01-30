@@ -21,7 +21,9 @@ const userSchema = new Schema({
         lowercase: true
     },
     googleId: {
-        type: String
+        type: String,
+        unique: true,
+        sparse: true
     },
     authType: {
         type: String,
@@ -30,8 +32,11 @@ const userSchema = new Schema({
     },
     createdAt: {
         type: Date,
-        default: Date.now
-    }
+        default: Date.now,
+        // Transform on retrieval
+    },
+}, {
+    timestamps: true  // Apply getters when converting to JSON
 
 })
 

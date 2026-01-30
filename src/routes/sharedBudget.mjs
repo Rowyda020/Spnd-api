@@ -6,6 +6,7 @@ import { createsharedBudgetValidationSchema } from "../utils/validationSchema.mj
 import { checkSchema, matchedData, validationResult } from "express-validator";
 import { sendSharedBudgetEmail } from "../utils/emailHelper.mjs";
 import Expense from "../models/expense.mjs";
+import { authenticateJWT } from "../middleware/jwtAuth.mjs";
 import User from "../models/user.mjs";
 const router = Router();
 
@@ -13,7 +14,7 @@ const router = Router();
 
 router.post(
     '/create-sharedBudget',
-    isLoggedIn,
+    authenticateJWT,
     checkSchema(createsharedBudgetValidationSchema),
     async (req, res) => {
         const errors = validationResult(req);
@@ -62,7 +63,7 @@ router.post(
 );
 
 
-router.post('/adding-budget', isLoggedIn, async (req, res) => {
+router.post('/adding-budget', authenticateJWT, async (req, res) => {
     const { amount } = req.body;
     const addedAmount = parseFloat(amount);
     const expenseDaat = {
@@ -108,7 +109,19 @@ router.post('/adding-budget', isLoggedIn, async (req, res) => {
         return res.status(500).json({ error: error.message });
     }
 });
-
+router.get('/shared-budgets', authenticateJWT, async (req, res) => {
+    try {
+        const budgets = await SharedBudget.find({
+            $or: [
+                { user: req.user._id },
+                { participants: req.user._id }
+            ]
+        }).populate('user', 'username email');
+        res.json(budgets);
+    } catch (err) {
+        res.status(500).json({ error: err.message });
+    }
+});
 
 // router.post('/using-budget', checkSchema(createIncomeValidationSchema), isLoggedIn, async (req, res) => {
 //     const result = validationResult(req)

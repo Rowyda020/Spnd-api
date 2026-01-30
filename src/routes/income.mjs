@@ -1,5 +1,5 @@
 import { Router } from "express";
-import { isLoggedIn } from "../middleware/isLoggedIn.mjs";
+import { authenticateJWT } from "../middleware/jwtAuth.mjs";
 import { createIncomeValidationSchema } from "../utils/validationSchema.mjs";
 import {
     query,
@@ -10,31 +10,50 @@ import {
 import Income from "../models/income.mjs";
 import User from "../models/user.mjs";
 const router = Router()
-router.post('/create-income', checkSchema(createIncomeValidationSchema), isLoggedIn, async (req, res) => {
-    const result = validationResult(req)
-    if (!result.isEmpty()) return res.status(400).send(result.array());
-    const data = matchedData(req);
-    console.log(req.user)
-    const incomeData = {
-        ...data,
-        user: req.user._id
-    };
+router.post(
+    '/create-income',
+    checkSchema(createIncomeValidationSchema),
+    authenticateJWT,
+    async (req, res) => {
+        const result = validationResult(req);
+        if (!result.isEmpty()) {
+            return res.status(400).json({ errors: result.array() });
+        }
 
-    const updatedIncome = Number((data.amount + req.user.totalIncome).toFixed(3))
-    const newIncome = new Income(incomeData);
-    const updateUserTotalIncome = await User.findById(req.user._id)
-    try {
-        const savedIncome = await newIncome.save();
-        await updateUserTotalIncome.updateOne({ totalIncome: updatedIncome })
-        const userIncomeResponse = savedIncome.toObject();
-        return res.status(201).send(userIncomeResponse);
-    } catch (error) {
-        return res.status(400).send({ error: error.message });
+        const data = matchedData(req);
+        console.log('Validated data:', data);
+        console.log('Authenticated user:', req.user);
+
+        try {
+            const incomeData = {
+                ...data,
+                user: req.user._id,
+                // date already handled by Mongoose if not sent (defaults to now)
+            };
+
+            const newIncome = new Income(incomeData);
+            const savedIncome = await newIncome.save();
+
+            // Atomic update – safer and one DB round-trip
+            const updatedUser = await User.findByIdAndUpdate(
+                req.user._id,
+                { $inc: { totalIncome: savedIncome.amount } },  // increment by exact amount
+                { new: true, select: 'totalIncome' }           // return updated doc
+            );
+
+            // Optional: return both income + updated user total
+            return res.status(201).json({
+                income: savedIncome.toObject(),
+                totalIncome: updatedUser.totalIncome
+            });
+        } catch (error) {
+            console.error('Error creating income:', error);
+            return res.status(400).json({ error: error.message || 'Failed to create income' });
+        }
     }
+);
 
-})
-
-router.get('/all-incomes', isLoggedIn, async (req, res) => {
+router.get('/all-incomes', authenticateJWT, async (req, res) => {
 
     try {
         const incomes = await Income.find({ user: req.user._id });

@@ -2,6 +2,7 @@ import Expense from "../models/expense.mjs";
 import User from "../models/user.mjs";
 import { Router } from "express";
 import { isLoggedIn } from "../middleware/isLoggedIn.mjs";
+import { authenticateJWT } from "../middleware/jwtAuth.mjs";
 import { createExpenseValidationSchema } from "../utils/validationSchema.mjs";
 import { sendExpenseEmail, sendWarningEmail } from "../utils/emailHelper.mjs";
 import dotenv from 'dotenv'
@@ -14,7 +15,7 @@ import {
 } from "express-validator";
 
 const router = Router();
-router.post('/create-expense', isLoggedIn, checkSchema(createExpenseValidationSchema), async (req, res) => {
+router.post('/create-expense', authenticateJWT, checkSchema(createExpenseValidationSchema), async (req, res) => {
     const result = validationResult(req)
     if (!result.isEmpty()) return res.status(400).send(result.array());
     const data = matchedData(req);
@@ -46,7 +47,7 @@ router.post('/create-expense', isLoggedIn, checkSchema(createExpenseValidationSc
 
 
 
-router.get('/all-expenses', isLoggedIn, async (req, res) => {
+router.get('/all-expenses', authenticateJWT, async (req, res) => {
 
     try {
         const expenses = await Expense.find({ user: req.user._id });
