@@ -64,49 +64,72 @@ router.post(
 
 
 router.post('/adding-budget', authenticateJWT, async (req, res) => {
-    const { amount } = req.body;
+    const { amount, budgetId } = req.body;
+
+    if (!amount) {
+        return res.status(400).json({ error: "Amount is required" });
+    }
+    if (!budgetId) {
+        return res.status(400).json({
+            error: "Budget ID is required (select which shared budget to contribute to)"
+        });
+    }
+
     const addedAmount = parseFloat(amount);
-    const expenseDaat = {
-        user: req.user._id,
-        amount: amount,
-        description: "roomies",
-        category: "shared budget"
-    };
-
-
     if (isNaN(addedAmount) || addedAmount <= 0) {
         return res.status(400).json({ error: "Amount must be a positive number" });
     }
 
     try {
-        // Step 1: Find the shared budget where user is a participant
-        const sharedBudget = await SharedBudget.findOne({ participants: req.user._id });
+        // Find specific budget + verify user is participant
+        const sharedBudget = await SharedBudget.findOne({
+            _id: budgetId,
+            participants: req.user._id
+        });
 
         if (!sharedBudget) {
-            return res.status(400).json({ error: "You are not a participant in any shared budget" });
+            return res.status(404).json({
+                error: "Shared budget not found or you are not a participant"
+            });
         }
-        if (addedAmount < req.user.totalIncome) {
-            const updatedIncome = Number((req.user.totalIncome - addedAmount).toFixed(3))
-            const updateUserTotalIncome = await User.findById(req.user._id)
-            const newExpense = new Expense(expenseDaat);
 
-            await SharedBudget.updateOne(
-                { _id: sharedBudget._id },
-                { $inc: { amount: addedAmount } }
-            );
-            await updateUserTotalIncome.updateOne({ totalIncome: updatedIncome })
-            const updatedBudget = await SharedBudget.findById(sharedBudget._id);
-            await newExpense.save();
-            return res.status(200).json(updatedBudget);
+        if (addedAmount > req.user.totalIncome) {
+            return res.status(400).json({
+                error: "Not enough funds in your wallet"
+            });
         }
-        return res.status(400).send("are you stupid?")
 
+        // Update user income
+        const updatedIncome = Number((req.user.totalIncome - addedAmount).toFixed(2));
+        await User.findByIdAndUpdate(req.user._id, { totalIncome: updatedIncome });
 
+        // Update budget
+        const updatedBudget = await SharedBudget.findByIdAndUpdate(
+            sharedBudget._id,
+            { $inc: { amount: addedAmount } },
+            { new: true }
+        );
 
+        // Record as expense
+        const newExpense = new Expense({
+            user: req.user._id,
+            amount: addedAmount,
+            description: sharedBudget.budgetname,
+            category: "shared budget",
+            // Optional: budgetId: sharedBudget._id,
+        });
+        await newExpense.save();
+
+        return res.status(200).json({
+            success: true,
+            updatedBudget,
+            remainingIncome: updatedIncome,
+            message: `Added $${addedAmount.toFixed(2)} to "${sharedBudget.budgetname}"`
+        });
 
     } catch (error) {
-        console.error(error);
-        return res.status(500).json({ error: error.message });
+        console.error('Add to budget error:', error);
+        return res.status(500).json({ error: 'Server error' });
     }
 });
 router.get('/shared-budgets', authenticateJWT, async (req, res) => {
