@@ -1,7 +1,7 @@
 import express from 'express'
 import dotenv from 'dotenv'
 import mongoose, { Mongoose } from 'mongoose';
-import indexRoute from '../Spnd/src/routes/index.mjs'
+import indexRoute from './src/routes/index.mjs';
 import passport from "passport"
 import MongoStore from "connect-mongo"
 
