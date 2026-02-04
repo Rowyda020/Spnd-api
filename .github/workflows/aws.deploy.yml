@@ -46,7 +46,7 @@ jobs:
           timeout 60 bash -c 'until mongosh --host localhost -u test -p test --eval "db.adminCommand(\"ping\")"; do sleep 2; done'
       - run: npm test
         env:
-          MONGO_URI: mongodb+srv://spnd_user:fsociety2002@spnd-cluster.na1m69x.mongodb.net/?appName=spnd-cluster
+          MONGO_URI: mongodb://test:test@localhost:27017/test?authSource=admin
           JWT_SECRET: test-secret
           NODE_ENV: test
 
