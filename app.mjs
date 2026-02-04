@@ -4,7 +4,7 @@ import mongoose, { Mongoose } from 'mongoose';
 import indexRoute from './src/routes/index.mjs';
 import passport from "passport"
 import MongoStore from "connect-mongo"
-
+import cors from "cors";
 import session from "express-session"
 dotenv.config();
 
@@ -26,7 +26,10 @@ app.use(session({
 }))
 app.use(passport.initialize())
 app.use(passport.session())
-
+app.use(cors({
+    origin: '*', // or your app's URL/IP
+    credentials: true
+}));
 app.use(indexRoute)
 
 app.listen(port, () => {
