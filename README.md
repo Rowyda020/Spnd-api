@@ -4,7 +4,7 @@
        width="180" />
 </p>
 
-# 💰 Spnd Mobile - Smart Budget Tracking App
+# 💰 Spnd - Smart Budget Tracking App
 > A full-stack budget tracking application with React Native mobile app and Node.js backend, featuring automated CI/CD deployment to AWS EC2.
   
 📱 **Mobile App**: Available for iOS & Android  
