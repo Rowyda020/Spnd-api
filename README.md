@@ -505,7 +505,7 @@ If you found this project helpful, please give it a ⭐️!
 ---
 
 <div align="center">
-  Made with ❤️ by Your Name
+  Made with ❤️ by Rowyda Ramadan
   
   [Report Bug](https://github.com/rowyda020/spnd/issues) · 
   [Request Feature](https://github.com/rowyda020/spnd/issues) · 
